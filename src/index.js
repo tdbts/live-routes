@@ -18,9 +18,7 @@ injectScript(service.getGoogleMapsURL())
 	.then(() => render(
 		<Provider store={store}>
 			<ConnectedRouter history={history}>
-				<div>
-					<App service={ service } />
-				</div>
+				<App service={ service } />
 			</ConnectedRouter>
 		</Provider>,
 		target
@@ -29,3 +27,4 @@ injectScript(service.getGoogleMapsURL())
 	.catch(e => {
 		window.console.error(e);
 	});
+
