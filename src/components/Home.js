@@ -1,22 +1,14 @@
-
-import React from 'react'
-import { push } from 'connected-react-router'
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
+import React from 'react';
+import { connect } from 'react-redux';
+import RouteSelector from './RouteSelector';
 
 const Home = props => (
-	<div>
-		<h1>Home</h1>
-		<p>Welcome home!</p>
-		<button onClick={() => props.changePage()}>Go to live route page via redux</button>
+	<div className={ "component-home container fill-container" }>
+		<RouteSelector />
   	</div>
 );
 
-const mapDispatchToProps = dispatch => bindActionCreators({
-	changePage: () => push('/live-route')
-}, dispatch);
-
 export default connect(
 	null, 
-	mapDispatchToProps
+	null
 )(Home);

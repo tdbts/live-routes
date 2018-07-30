@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Route, Link } from 'react-router-dom'
 import Home from './components/Home'
-import LiveRoute from './components/LiveRoute'
 import './App.css';
 
 class App extends Component {
@@ -13,8 +12,7 @@ class App extends Component {
 				</header>
 
 				<main>
-					<Route exact path="/" component={Home} />
-					<Route exact path="/live-route" component={LiveRoute} />
+					<Route exact path="/" component={ Home } />
 				</main>
 			</div>
 		);
