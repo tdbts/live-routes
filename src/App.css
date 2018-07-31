@@ -9,10 +9,12 @@
 
 .component-search-box {
 	position: absolute;
-	top: 14%;
-	left: 1%;
+	top: 10%;
+	left: 0;
+	right: 0;
+	margin: 0 auto;
 	width: 15%;
-	max-width: 250px;
+	min-width: 250px;
 	height: 5%;
 	max-height: 100px;
 }
