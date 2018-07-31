@@ -1,4 +1,18 @@
+.component-app {
+	position: relative;
+}
+
 .fill-container, .component-app > main {
 	width: 100%;
 	height: 100%;
+}
+
+.component-search-box {
+	position: absolute;
+	top: 14%;
+	left: 1%;
+	width: 15%;
+	max-width: 250px;
+	height: 5%;
+	max-height: 100px;
 }

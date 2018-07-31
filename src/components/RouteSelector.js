@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import GoogleMap from './GoogleMap';
+import SearchBox from './SearchBox';
 
 class RouteSelector extends Component {
 
@@ -8,6 +9,7 @@ class RouteSelector extends Component {
 		return (
 			<div className="component-route-selector container fill-container">
 				<GoogleMap />
+				<SearchBox />
 			</div>
 		);
 	}
