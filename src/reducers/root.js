@@ -1,3 +1,6 @@
 import { combineReducers } from 'redux';
+import routeSelectorBounds from './routeSelectorBounds';
 
-export default combineReducers({});
+export default combineReducers({
+	routeSelectorBounds
+});

@@ -30,7 +30,21 @@ class GoogleMap extends Component {
 	}
 
 	_onMapMounted(element) {
+		if (this._map)
+			return;
+
 		this._map = this._createMap(element);
+	}
+
+	_setBounds(prevProps) {
+		if (!(this._map) || (prevProps.bounds === this.props.bounds))
+			return;
+
+		this._map.fitBounds(this.props.bounds);
+	}
+
+	componentDidUpdate(prevProps) {
+		this._setBounds(prevProps);
 	}
 
 	render() {
@@ -46,7 +60,13 @@ class GoogleMap extends Component {
 
 }
 
+const mapStateToProps = function mapStateToProps(state) {
+	return {
+		bounds: state.routeSelectorBounds
+	};
+}; 
+
 export default connect(
-	null,
+	mapStateToProps,
 	null
 )(GoogleMap);
