@@ -16,13 +16,25 @@ class GoogleMap extends Component {
 		this.state = {
 			element: null
 		};
+
+		this._startMarker = null;
+		this._endMarker = null;
 	}
 
 	_createMap(element) {
-		return new google.maps.Map(element, this._getOptions());
+		return new google.maps.Map(element, this._getMapOptions());
 	}
 
-	_getOptions() {
+	_createMarker(label, position) {
+		return new google.maps.Marker({
+			position,
+			label,
+			draggable: true,
+			map: this.props.map
+		});
+	}
+
+	_getMapOptions() {
 		return {
 			center: { lat: 0, lng: 0 },
 			zoom: 3
@@ -43,8 +55,28 @@ class GoogleMap extends Component {
 		this.props.map.fitBounds(this.props.place.geometry.viewport);
 	}
 
+	_setMarkers(prevProps) {
+		const { map } = this.props;
+
+		if (!(map) || (prevProps.map === map))
+			return;
+
+		this._startMarker = this._createMarker("Start", map.getCenter());
+		this._endMarker = this._createMarker("End", map.getCenter());
+	}
+
+	_setMarkersPosition(prevProps) {
+		if (!(this.props.map) || !(this._startMarker) || !(this._endMarker) || (prevProps.place === this.props.place))
+			return;
+
+		this._startMarker.setPosition(this.props.map.getCenter());
+		this._endMarker.setPosition(this.props.map.getCenter());
+	}
+
 	componentDidUpdate(prevProps) {
 		this._setBounds(prevProps);
+		this._setMarkers(prevProps);
+		this._setMarkersPosition(prevProps);
 	}
 
 	render() {
