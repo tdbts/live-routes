@@ -12,7 +12,7 @@ class SearchBox extends Component {
 		super(props);
 
 		this.events = {
-			PLACES_CHANGED: 'places_changed'
+			PLACE_CHANGED: 'place_changed'
 		};
 
 		this.setState = promisifySetState(this);
@@ -25,18 +25,18 @@ class SearchBox extends Component {
 		this._autoComplete = null;
 	}
 
-	_addSearchBoxListeners(searchBox) {
-		if (!(searchBox))
+	_addAutocompleteListeners(autocomplete) {
+		if (!(autocomplete))
 			return;
 
-		searchBox.addListener(this.events.PLACES_CHANGED, () => this._onPlacesChanged());
+		autocomplete.addListener(this.events.PLACE_CHANGED, () => this._onPlaceChanged());
 	}
 
 	_createAutocomplete(element) {
 		if (!(element) || this._autoComplete)
 			return;
 
-		return new google.maps.places.Autocomplete(element);
+		return new google.maps.places.Autocomplete(element, { strictBounds: true });
 	}
 
 	_createSearchBox(element) {
@@ -55,16 +55,17 @@ class SearchBox extends Component {
 			return;
 
 		this._searchBox = this._createSearchBox(element);
-		this._addSearchBoxListeners(this._searchBox);
-
 		this._autoComplete = this._createAutocomplete(element);
+
+		this._addAutocompleteListeners(this._autoComplete);
 	}
 
-	_onPlacesChanged() {
-		if (!(this._searchBox))
+	_onPlaceChanged() {
+		window.console.log("PLACE_CHANGED");
+		if (!(this._autoComplete))
 			return;
 
-		const [ place ] = this._searchBox.getPlaces();
+		const place= this._autoComplete.getPlace();
 
 		window.console.log("place:", place); 
 
