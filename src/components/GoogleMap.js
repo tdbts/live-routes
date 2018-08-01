@@ -94,6 +94,7 @@ class GoogleMap extends Component {
 
 const mapStateToProps = function mapStateToProps(state) {
 	return {
+		calculatingRoute: state.calculatingRoute,
 		place: state.routeSelectorPlace,
 		map: state.routeSelectorMap
 	};
