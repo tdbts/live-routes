@@ -1,8 +1,8 @@
 import { combineReducers } from 'redux';
-import routeSelectorBounds from './routeSelectorBounds';
+import routeSelectorPlace from './routeSelectorPlace';
 import routeSelectorMap from './routeSelectorMap';
 
 export default combineReducers({
-	routeSelectorBounds,
+	routeSelectorPlace,
 	routeSelectorMap
 });

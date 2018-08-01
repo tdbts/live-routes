@@ -2,7 +2,7 @@
 
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { SET_ROUTE_SELECTOR_BOUNDS } from '../actions/actions';
+import { SET_ROUTE_SELECTOR_PLACE } from '../actions/actions';
 import promisifySetState from '../utils/promisifySetState';
 import actionTypeWithPayload from '../utils/actionTypeWithPayload';
 
@@ -46,14 +46,6 @@ class SearchBox extends Component {
 		return new google.maps.places.SearchBox(element);
 	}
 
-	_getFirstLocationFromPlaces(places) {
-		for (const place of places) {
-			if (place && place.geometry && place.geometry.viewport) {
-				return place.geometry.viewport;
-			}
-		}
-	}
-
 	_onChangeEvent(event) {
 		this.setState({ value: event.target.value });
 	}
@@ -72,21 +64,14 @@ class SearchBox extends Component {
 		if (!(this._searchBox))
 			return;
 
-		const places = this._searchBox.getPlaces();
+		const [ place ] = this._searchBox.getPlaces();
 
-		window.console.log("places:", places); 
+		window.console.log("place:", place); 
 
-		if (!(places.length))
+		if (!(place))
 			return;
 
-		const location = this._getFirstLocationFromPlaces(places);
-
-		window.console.log("location:", location); 
-
-		if (!(location))
-			return;
-
-		this.props.setRouteSelectorBounds(location);
+		this.props.setRouteSelectorPlace(place);
 	}
 
 	render() {
@@ -107,8 +92,8 @@ class SearchBox extends Component {
 
 const mapDispatchToProps = function mapDispatchToProps(dispatch) {
 	return {
-		setRouteSelectorBounds(location) {
-			dispatch(actionTypeWithPayload(SET_ROUTE_SELECTOR_BOUNDS, location));
+		setRouteSelectorPlace(location) {
+			dispatch(actionTypeWithPayload(SET_ROUTE_SELECTOR_PLACE, location));
 		}
 	};
 }; 

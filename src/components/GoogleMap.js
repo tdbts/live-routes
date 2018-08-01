@@ -37,10 +37,10 @@ class GoogleMap extends Component {
 	}
 
 	_setBounds(prevProps) {
-		if (!(this.props.map) || (prevProps.bounds === this.props.bounds))
+		if (!(this.props.map) || (prevProps.place === this.props.place))
 			return;
 
-		this.props.map.fitBounds(this.props.bounds);
+		this.props.map.fitBounds(this.props.place.geometry.viewport);
 	}
 
 	componentDidUpdate(prevProps) {
@@ -62,7 +62,7 @@ class GoogleMap extends Component {
 
 const mapStateToProps = function mapStateToProps(state) {
 	return {
-		bounds: state.routeSelectorBounds,
+		place: state.routeSelectorPlace,
 		map: state.routeSelectorMap
 	};
 }; 
