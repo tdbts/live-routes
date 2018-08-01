@@ -2,7 +2,9 @@
 
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { SET_ROUTE_SELECTOR_MAP } from '../actions/actions';
 import promisifySetState from '../utils/promisifySetState';
+import actionTypeWithPayload from '../utils/actionTypeWithPayload';
 
 class GoogleMap extends Component {
 
@@ -14,8 +16,6 @@ class GoogleMap extends Component {
 		this.state = {
 			element: null
 		};
-
-		this._map = null;
 	}
 
 	_createMap(element) {
@@ -30,17 +30,17 @@ class GoogleMap extends Component {
 	}
 
 	_onMapMounted(element) {
-		if (this._map)
+		if (this.props.map || !(element))
 			return;
 
-		this._map = this._createMap(element);
+		this.props.setRouteSelectorMap(this._createMap(element));
 	}
 
 	_setBounds(prevProps) {
-		if (!(this._map) || (prevProps.bounds === this.props.bounds))
+		if (!(this.props.map) || (prevProps.bounds === this.props.bounds))
 			return;
 
-		this._map.fitBounds(this.props.bounds);
+		this.props.map.fitBounds(this.props.bounds);
 	}
 
 	componentDidUpdate(prevProps) {
@@ -62,11 +62,21 @@ class GoogleMap extends Component {
 
 const mapStateToProps = function mapStateToProps(state) {
 	return {
-		bounds: state.routeSelectorBounds
+		bounds: state.routeSelectorBounds,
+		map: state.routeSelectorMap
 	};
 }; 
 
+const mapDispatchToProps = function mapDispatchToProps(dispatch) {
+	return {
+		setRouteSelectorMap(map) {
+			dispatch(actionTypeWithPayload(SET_ROUTE_SELECTOR_MAP, map));
+		}
+	};
+}; 
+
+
 export default connect(
 	mapStateToProps,
-	null
+	mapDispatchToProps
 )(GoogleMap);
