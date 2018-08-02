@@ -2,7 +2,7 @@
 
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { SET_ROUTE_SELECTOR_MAP } from '../actions/actions';
+import { ROUTE_CALCULATION_COMPLETE, SET_ROUTE_SELECTOR_MAP } from '../actions/actions';
 import promisifySetState from '../utils/promisifySetState';
 import actionTypeWithPayload from '../utils/actionTypeWithPayload';
 
@@ -19,6 +19,43 @@ class GoogleMap extends Component {
 
 		this._startMarker = null;
 		this._endMarker = null;
+		this._directionsService = null;
+		this._directionsRenderer = null;
+	}
+
+	_calculateRoute() {
+		if (!(this._directionsService))
+			return;
+
+		const origin = this._startMarker.getPosition();
+		const destination = this._endMarker.getPosition();
+		const request = this._createDirectionsRequest(origin, destination, 'WALKING');
+
+		this._directionsService.route(request, (response, status) => this._onDirectionsServiceResponse(response, status));
+	}
+
+	_createDirectionsRenderer(map) {
+		if (this._directionsRenderer)
+			return;
+
+		const renderer = new google.maps.DirectionsRenderer();
+		renderer.setMap(map);
+		renderer.setOptions({ 
+			suppressMarkers: true 
+		});
+
+		return renderer;
+	}
+
+	_createDirectionsRequest(origin, destination, travelMode) {
+		return { origin, destination, travelMode };
+	}
+
+	_createDirectionsService() {
+		if (this._directionsService)
+			return;
+
+		return new google.maps.DirectionsService();
 	}
 
 	_createMap(element) {
@@ -41,11 +78,45 @@ class GoogleMap extends Component {
 		};
 	}
 
+	_getPathFromDirections(directions) {
+		return directions.routes[0].overview_path;
+	}
+
+	_handleRouteCalculationRequest(prevProps) {
+		if (prevProps.calculatingRoute === this.props.calculatingRoute)
+			return;
+
+		if (this.props.calculatingRoute) {
+			this._calculateRoute();
+		}
+	}
+
+	_onDirectionsServiceResponse(response, status) {
+		if (status === 'OK') {
+			this._renderDirections(response);
+		} else {
+			window.console.error(`DirectionsService response status: ${ status}`);
+		}
+
+		this.props.routeCalculationComplete();
+	}
+
 	_onMapMounted(element) {
 		if (this.props.map || !(element))
 			return;
 
-		this.props.setRouteSelectorMap(this._createMap(element));
+		const map = this._createMap(element);
+
+		this.props.setRouteSelectorMap(map);
+		this._directionsService = this._createDirectionsService();
+		this._directionsRenderer = this._createDirectionsRenderer(map);
+	}
+
+	_renderDirections(directions) {
+		if (!(this._directionsRenderer))
+			return;
+
+		this._directionsRenderer.setDirections(directions);
 	}
 
 	_setBounds(prevProps) {
@@ -77,6 +148,7 @@ class GoogleMap extends Component {
 		this._setBounds(prevProps);
 		this._setMarkers(prevProps);
 		this._setMarkersPosition(prevProps);
+		this._handleRouteCalculationRequest(prevProps);
 	}
 
 	render() {
@@ -102,6 +174,10 @@ const mapStateToProps = function mapStateToProps(state) {
 
 const mapDispatchToProps = function mapDispatchToProps(dispatch) {
 	return {
+		routeCalculationComplete() {
+			dispatch(actionTypeWithPayload(ROUTE_CALCULATION_COMPLETE));
+		},
+		
 		setRouteSelectorMap(map) {
 			dispatch(actionTypeWithPayload(SET_ROUTE_SELECTOR_MAP, map));
 		}

@@ -8,7 +8,7 @@ const CalculateRouteButton = props => (
 	<Button 
 		className="component-calculate-route-button"
 		label="Calculate Route"
-		onClick={ props.onClick }
+		onClick={ props.requestRouteCalculation }
 	/>
 );
 
@@ -18,4 +18,7 @@ const mapDispatchToProps = function mapDispatchToProps(dispatch) {
 	};
 }; 
 
-export default connect(null, mapDispatchToProps)(CalculateRouteButton);
+export default connect(
+	null, 
+	mapDispatchToProps
+)(CalculateRouteButton);
