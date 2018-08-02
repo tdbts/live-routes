@@ -1,5 +1,3 @@
-/* global google */
-
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { ROUTE_CALCULATION_COMPLETE, SET_ROUTE_SELECTOR_MAP } from '../actions/actions';
@@ -19,51 +17,19 @@ class GoogleMap extends Component {
 
 		this._startMarker = null;
 		this._endMarker = null;
-		this._directionsService = null;
-		this._directionsRenderer = null;
 	}
 
 	_calculateRoute() {
-		if (!(this._directionsService))
-			return;
-
 		const origin = this._startMarker.getPosition();
 		const destination = this._endMarker.getPosition();
-		const request = this._createDirectionsRequest(origin, destination, 'WALKING');
-
-		this._directionsService.route(request, (response, status) => this._onDirectionsServiceResponse(response, status));
-	}
-
-	_createDirectionsRenderer(map) {
-		if (this._directionsRenderer)
-			return;
-
-		const renderer = new google.maps.DirectionsRenderer();
-		renderer.setMap(map);
-		renderer.setOptions({ 
-			suppressMarkers: true 
-		});
-
-		return renderer;
-	}
-
-	_createDirectionsRequest(origin, destination, travelMode) {
-		return { origin, destination, travelMode };
-	}
-
-	_createDirectionsService() {
-		if (this._directionsService)
-			return;
-
-		return new google.maps.DirectionsService();
-	}
-
-	_createMap(element) {
-		return new google.maps.Map(element, this._getMapOptions());
+		
+		this.props.service.calculateRoute(origin, destination, 'WALKING')
+			.then(directions => this.props.service.renderDirections(directions))
+			.catch(status => window.console.error(`DirectionsService response status: ${ status }`));
 	}
 
 	_createMarker(label, position) {
-		return new google.maps.Marker({
+		return this.props.service.createMarker(label, position, {
 			position,
 			label,
 			draggable: true,
@@ -76,10 +42,6 @@ class GoogleMap extends Component {
 			center: { lat: 0, lng: 0 },
 			zoom: 3
 		};
-	}
-
-	_getPathFromDirections(directions) {
-		return directions.routes[0].overview_path;
 	}
 
 	_handleRouteCalculationRequest(prevProps) {
@@ -105,25 +67,20 @@ class GoogleMap extends Component {
 		if (this.props.map || !(element))
 			return;
 
-		const map = this._createMap(element);
+		const map = this.props.service.createMap(element, this._getMapOptions());
 
 		this.props.setRouteSelectorMap(map);
-		this._directionsService = this._createDirectionsService();
-		this._directionsRenderer = this._createDirectionsRenderer(map);
-	}
-
-	_renderDirections(directions) {
-		if (!(this._directionsRenderer))
-			return;
-
-		this._directionsRenderer.setDirections(directions);
+		this.props.service.registerMap(map);
 	}
 
 	_setBounds(prevProps) {
-		if (!(this.props.map) || (prevProps.place === this.props.place))
-			return;
+		const { map, place } = this.props;
 
-		this.props.map.fitBounds(this.props.place.geometry.viewport);
+		if (!(map) || (prevProps.place === place))
+			return;
+		
+		if (place && place.geometry && place.geometry.viewport)
+			map.fitBounds(place.geometry.viewport);
 	}
 
 	_setMarkers(prevProps) {
@@ -167,8 +124,9 @@ class GoogleMap extends Component {
 const mapStateToProps = function mapStateToProps(state) {
 	return {
 		calculatingRoute: state.calculatingRoute,
+		map: state.routeSelectorMap,
 		place: state.routeSelectorPlace,
-		map: state.routeSelectorMap
+		service: state.service
 	};
 }; 
 

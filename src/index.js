@@ -9,9 +9,13 @@ import App from './App'
 import './index.css'
 import LiveRoutesService from './services/LiveRoutesService';
 import injectScript from './utils/injectScript';
+import actionTypeWithPayload from './utils/actionTypeWithPayload';
+import { SET_SERVICE } from './actions/actions';
 
 const service = new LiveRoutesService();
 const target = document.querySelector('#root');
+
+store.dispatch(actionTypeWithPayload(SET_SERVICE, service));
 
 injectScript(service.getGoogleMapsURL())
 
@@ -27,4 +31,3 @@ injectScript(service.getGoogleMapsURL())
 	.catch(e => {
 		window.console.error(e);
 	});
-
