@@ -1,7 +1,5 @@
 /* global google */
 
-import { GOOGLE_MAPS_API_URL, GOOGLE_MAPS_KEY } from '../constants/constants';
-
 export default class LiveRoutesService {
 
 	constructor() {
@@ -58,7 +56,7 @@ export default class LiveRoutesService {
 	}
 
 	getGoogleMapsURL(key) {
-		return `${ GOOGLE_MAPS_API_URL }?key=${ GOOGLE_MAPS_KEY }&libraries=drawing,geometry,places`;
+		return `${ process.env.REACT_APP_GOOGLE_MAPS_API_URL }?key=${ process.env.REACT_APP_GOOGLE_MAPS_KEY }&libraries=drawing,geometry,places`;
 	}
 
 	registerMap(map) {
