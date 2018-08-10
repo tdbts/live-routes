@@ -7,7 +7,7 @@ export default class LiveRoutesService {
 		this._directionsRenderer = null;
 	}
 	
-	_createDirectionsRenderer(map) {
+	_createDirectionsRenderer() {
 		if (this._directionsRenderer)
 			return;
 
@@ -61,7 +61,7 @@ export default class LiveRoutesService {
 
 	registerMap(map) {
 		this._directionsService = this._createDirectionsService();
-		this._directionsRenderer = this._createDirectionsRenderer(map);		
+		this._directionsRenderer = this._createDirectionsRenderer();		
 		this._directionsRenderer.setMap(map);
 	}
 
