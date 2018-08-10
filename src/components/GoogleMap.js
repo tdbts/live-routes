@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { ROUTE_CALCULATION_COMPLETE, SET_ROUTE_SELECTOR_MAP } from '../actions/actions';
+import { ROUTE_CALCULATION_COMPLETE, SET_DIRECTIONS, SET_ROUTE_SELECTOR_MAP } from '../actions/actions';
 import promisifySetState from '../utils/promisifySetState';
 import actionTypeWithPayload from '../utils/actionTypeWithPayload';
 
@@ -20,12 +20,12 @@ class GoogleMap extends Component {
 	}
 
 	_calculateRoute() {
-		const { service, routeCalculationComplete } = this.props;
+		const { service, setDirections, routeCalculationComplete } = this.props;
 		const origin = this._startMarker.getPosition();
 		const destination = this._endMarker.getPosition();
 		
 		service.calculateRoute(origin, destination, 'WALKING')
-			.then(directions => service.renderDirections(directions))
+			.then(setDirections)
 			.then(routeCalculationComplete)
 			.catch(status => window.console.error(`DirectionsService response status: ${ status }`));
 	}
@@ -46,13 +46,13 @@ class GoogleMap extends Component {
 		};
 	}
 
-	_handleRouteCalculationRequest(prevProps) {
-		if (prevProps.calculatingRoute === this.props.calculatingRoute)
+	_onDirectionsUpdate(prevProps) {
+		const { directions } = this.props;
+
+		if (directions === prevProps.directions)
 			return;
 
-		if (this.props.calculatingRoute) {
-			this._calculateRoute();
-		}
+		this._renderDirections(directions);
 	}
 
 	_onMapMounted(element) {
@@ -63,6 +63,22 @@ class GoogleMap extends Component {
 
 		this.props.setRouteSelectorMap(map);
 		this.props.service.registerMap(map);
+	}
+
+	_onRouteCalculationRequest(prevProps) {
+		if (prevProps.calculatingRoute === this.props.calculatingRoute)
+			return;
+
+		if (this.props.calculatingRoute) {
+			this._calculateRoute();
+		}
+	}
+
+	_renderDirections(directions) {
+		if (!(directions))
+			return;
+
+		this.props.service.renderDirections(directions);
 	}
 
 	_setBounds(prevProps) {
@@ -97,7 +113,8 @@ class GoogleMap extends Component {
 		this._setBounds(prevProps);
 		this._setMarkers(prevProps);
 		this._setMarkersPosition(prevProps);
-		this._handleRouteCalculationRequest(prevProps);
+		this._onRouteCalculationRequest(prevProps);
+		this._onDirectionsUpdate(prevProps);
 	}
 
 	render() {
@@ -116,6 +133,7 @@ class GoogleMap extends Component {
 const mapStateToProps = function mapStateToProps(state) {
 	return {
 		calculatingRoute: state.calculatingRoute,
+		directions: state.directions,
 		map: state.routeSelectorMap,
 		place: state.routeSelectorPlace,
 		service: state.service
@@ -128,6 +146,10 @@ const mapDispatchToProps = function mapDispatchToProps(dispatch) {
 			dispatch(actionTypeWithPayload(ROUTE_CALCULATION_COMPLETE));
 		},
 		
+		setDirections(route) {
+			dispatch(actionTypeWithPayload(SET_DIRECTIONS, route));
+		},
+
 		setRouteSelectorMap(map) {
 			dispatch(actionTypeWithPayload(SET_ROUTE_SELECTOR_MAP, map));
 		}
