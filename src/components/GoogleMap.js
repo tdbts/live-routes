@@ -20,11 +20,13 @@ class GoogleMap extends Component {
 	}
 
 	_calculateRoute() {
+		const { service, routeCalculationComplete } = this.props;
 		const origin = this._startMarker.getPosition();
 		const destination = this._endMarker.getPosition();
 		
-		this.props.service.calculateRoute(origin, destination, 'WALKING')
-			.then(directions => this.props.service.renderDirections(directions))
+		service.calculateRoute(origin, destination, 'WALKING')
+			.then(directions => service.renderDirections(directions))
+			.then(routeCalculationComplete)
 			.catch(status => window.console.error(`DirectionsService response status: ${ status }`));
 	}
 
@@ -51,16 +53,6 @@ class GoogleMap extends Component {
 		if (this.props.calculatingRoute) {
 			this._calculateRoute();
 		}
-	}
-
-	_onDirectionsServiceResponse(response, status) {
-		if (status === 'OK') {
-			this._renderDirections(response);
-		} else {
-			window.console.error(`DirectionsService response status: ${ status}`);
-		}
-
-		this.props.routeCalculationComplete();
 	}
 
 	_onMapMounted(element) {
