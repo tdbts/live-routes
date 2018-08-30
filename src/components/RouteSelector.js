@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import GoogleMap from './GoogleMap';
 import SearchBox from './SearchBox';
 import CalculateRouteButton from './CalculateRouteButton';
+import SeeRouteButton from './SeeRouteButton';
 
 class RouteSelector extends Component {
 
@@ -12,6 +13,7 @@ class RouteSelector extends Component {
 				<GoogleMap />
 				<SearchBox />
 				<CalculateRouteButton />
+				<SeeRouteButton />
 			</div>
 		);
 	}

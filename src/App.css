@@ -19,9 +19,8 @@
 	max-height: 100px;
 }
 
-.component-calculate-route-button {
+.component-calculate-route-button, .component-see-route-button {
 	position: absolute;
-	right: 5%;
 	bottom: 3%;
 	width: 10%;
 	min-width: 150px;
@@ -30,4 +29,12 @@
 	border: 3px solid #000;
 	cursor: pointer;
 	border-radius: 30px;
+}
+
+.component-calculate-route-button {
+	right: 5%;
+}
+
+.component-see-route-button {
+	left: 5%;
 }
